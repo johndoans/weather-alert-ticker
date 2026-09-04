@@ -14,6 +14,7 @@ alert_text = ""
 
 if response.status_code == 200:
     # Parse the data
+    print(response.text)
     data = json.loads(response.text)
     alert_text = " ***** "
 
@@ -21,7 +22,7 @@ if response.status_code == 200:
     if len(data['features']) == 0:
         alert_text = "There are no current weather alerts for South St. Louis County."
     else:
-        alert_text += f" The National Weather Service has issued { len(data['features']) } alert(s) for South St. Louis County."
+        alert_text += f" The National Weather Service has issued { len(data['features']) } alert(s) that includes South St. Louis County."
 
         alert_number = 0
         # Go through each alert
@@ -29,8 +30,7 @@ if response.status_code == 200:
             alert_number += 1
 
             properties = alert['properties']
-            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for South St. Louis County."
-            alert_text +=  f"  {properties['description']}  "
+            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for the counties of {properties['areaDesc']} until {properties['expires']}."
         alert_text += " ***** "
 
     # Remove line break
