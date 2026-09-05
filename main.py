@@ -16,7 +16,7 @@ if response.status_code == 200:
     # Parse the data
     print(response.text)
     data = json.loads(response.text)
-    alert_text = " ***** "
+    alert_text = " ------ "
 
     # No alerts?
     if len(data['features']) == 0:
@@ -30,8 +30,10 @@ if response.status_code == 200:
             alert_number += 1
 
             properties = alert['properties']
+            sections = properties['description'].split('\n\n')
             alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for the counties of {properties['areaDesc']} until {properties['expires']}."
-        alert_text += " ***** "
+            alert_text +=  f" { sections[0]} "
+        alert_text += " ---END---                  "
 
     # Remove line break
     alert_text = alert_text.replace('\r', ' ').replace('\n', ' ')
