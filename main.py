@@ -1,6 +1,7 @@
 import tkinter as tk
 import requests
 import json
+import datetime
 
 # Get data from NWS
 headers = {'User-Agent' : 'myapp'}
@@ -22,7 +23,7 @@ if response.status_code == 200:
     if len(data['features']) == 0:
         alert_text = "There are no current weather alerts for South St. Louis County."
     else:
-        alert_text += f" The National Weather Service has issued { len(data['features']) } alert(s) that includes South St. Louis County."
+        alert_text += f" There are { len(data['features']) } weather alert(s) that includes South St. Louis County."
 
         alert_number = 0
         # Go through each alert
@@ -30,9 +31,30 @@ if response.status_code == 200:
             alert_number += 1
 
             properties = alert['properties']
-            sections = properties['description'].split('\n\n')
-            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for the counties of {properties['areaDesc']} until {properties['expires']}."
-            alert_text +=  f" { sections[0]} "
+
+            # Parse the expire time
+            expires = properties['expires']
+            date = expires.split('T')[0].split("-")
+            time = expires.split('T')[1].split("+")[0].split(":")
+            year = int(date[0])
+            month = int(date[1])
+            day = int(date[2])
+            hour = int(time[0])
+            minute = int(time[1])
+            date_object = datetime.datetime(year, month, day, hour, minute)
+
+            description_parts = properties['description'].split('\n\n')
+            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for the counties of {properties['areaDesc']} until {date_object.strftime("%A, %B %d, %Y at %I:%M %p")}."
+
+            # Get what/hazard
+            for part in description_parts:
+                if "WHAT..." in part:
+                    alert_text +=  f" { part } "
+                    break
+                if "HAZARD..." in part:
+                    alert_text +=  f" { part } "
+                    break
+
         alert_text += " ---END---                  "
 
     # Remove line break
