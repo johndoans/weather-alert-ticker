@@ -43,8 +43,17 @@ if response.status_code == 200:
             minute = int(time[1])
             date_object = datetime.datetime(year, month, day, hour, minute)
 
+            date_string = date_object.strftime("%A, %B %d, %Y at %I:%M %p")
+            if date_object.date() == datetime.date.today():
+                date_string = date_object.strftime("%I:%M %p") + " today"
+            elif date_object.date() == datetime.date.today() + datetime.timedelta(days=1):
+                date_string = date_object.strftime("%I:%M %p") + " tomorrow"
+            elif date_object.date() < datetime.date.today() + datetime.timedelta(days=6):
+                date_string = date_object.strftime("%I:%M %p %A")
+
+
             description_parts = properties['description'].split('\n\n')
-            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for the counties of {properties['areaDesc']} until {date_object.strftime("%A, %B %d, %Y at %I:%M %p")}."
+            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for the counties of {properties['areaDesc']} until { date_string }."
 
             # Get what/hazard
             for part in description_parts:
