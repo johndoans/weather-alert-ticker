@@ -3,10 +3,11 @@ import requests
 import json
 import datetime
 
-# Get data from NWS
+# Get data from NWS, county based alert
 headers = {'User-Agent' : 'myapp'}
 # endpoint = 'https://api.weather.gov/alerts?area=MO'
-endpoint = 'https://api.weather.gov/alerts/active?point=38.50,-90.33'
+# endpoint = 'https://api.weather.gov/alerts/active?point=38.50,-90.33'
+endpoint = 'https://api.weather.gov/alerts/active?zone=MOC549'
 
 response = requests.get(endpoint, headers = headers)
 data = response.json()
@@ -21,9 +22,9 @@ if response.status_code == 200:
 
     # No alerts?
     if len(data['features']) == 0:
-        alert_text = "There are no current weather alerts for South St. Louis County."
+        alert_text = "There are no current weather alerts for St. Louis County."
     else:
-        alert_text += f" There are { len(data['features']) } weather alert(s) that includes South St. Louis County."
+        alert_text += f" There are { len(data['features']) } weather alert(s) that includes St. Louis County."
 
         alert_number = 0
         # Go through each alert
