@@ -8,6 +8,7 @@ headers = {'User-Agent' : 'myapp'}
 # endpoint = 'https://api.weather.gov/alerts?area=MO'
 # endpoint = 'https://api.weather.gov/alerts/active?point=38.50,-90.33'
 endpoint = 'https://api.weather.gov/alerts/active?zone=MOC549'
+#endpoint = 'https://api.weather.gov/alerts/active?zone=SCC063'
 
 response = requests.get(endpoint, headers = headers)
 data = response.json()
@@ -64,6 +65,12 @@ if response.status_code == 200:
                 if "HAZARD..." in part:
                     alert_text +=  f" { part } "
                     break
+
+            # Action text
+            if properties['event'] == "Severe Thunderstorm Warning":
+                alert_text +=  f"Stay inside away from windows and trees."
+            else:
+                alert_text += properties['instruction']
 
         alert_text += " ---END---                  "
 
