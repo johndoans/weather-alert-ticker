@@ -1,10 +1,10 @@
 # weather-alert-ticker
 Personal Project: Weather Alert Display
 
-Shows Severe Weather Alerts from NWS in scrolling text on bottom of screen (work in progress). Can be used for TV, online streaming graphics.
-- Now shows for south St. Louis County
+Shows Severe Weather Alerts from NWS in scrolling text on bottom of screen (work in progress). Can be used for TV, online streaming graphics, etc.
+- Now shows for St. Louis County
 - Uses National Weather Service API
-- Right now, shows total number of alerts, and each alert's title and description
+- Right now, shows total number of alerts, and each alert's title, description, expiration, and headline
 - Does not auto-update yet, will add much more features in the future
 - Generative A.I. was not used for this project.
 
