@@ -8,7 +8,6 @@ headers = {'User-Agent' : 'myapp'}
 # endpoint = 'https://api.weather.gov/alerts?area=MO'
 # endpoint = 'https://api.weather.gov/alerts/active?point=38.50,-90.33'
 endpoint = 'https://api.weather.gov/alerts/active?zone=MOC549'
-#endpoint = 'https://api.weather.gov/alerts/active?zone=SCC063'
 
 response = requests.get(endpoint, headers = headers)
 data = response.json()
@@ -68,9 +67,55 @@ if response.status_code == 200:
 
             # Action text
             if properties['event'] == "Severe Thunderstorm Warning":
-                alert_text +=  f"Stay inside away from windows and trees."
+                alert_text +=  f" Stay inside away from windows and trees. "
+                # Thunderstorm intensity
+                if "thunderstormDamageThreat" in properties['parameters']:
+                    if properties['parameters']["thunderstormDamageThreat"][0] == "CONSIDERABLE":
+                        alert_text +=  f" This is a CONSIDERABLE severe thunderstorm which could cause major impacts. Take action now! "
+                    elif properties['parameters']["thunderstormDamageThreat"][0] == "DESTRUCTIVE":
+                        alert_text +=  f" This is a DESTRUCTIVE severe thunderstorm which could cause significant impacts. Take action now! "
+                else:
+                    alert_text +=  f" This is a standard severe thunderstorm warning. "
+
+                # A tornado is possible
+                if "tornadoDetection" in properties['parameters']:
+                    if properties['parameters']["tornadoDetection"][0] == "POSSIBLE":
+                        alert_text +=  f" This storm has the potential to form a tornado. "
+
+            elif properties['event'] == "Tornado Warning":
+                            alert_text +=  f" Go to the lowest, most interior room away from windows and trees. "
+
+                            # Observed tornado?
+                            if "tornadoDetection" in properties['parameters']:
+                                if properties['parameters']["tornadoDetection"][0] == "OBSERVED":
+                                    alert_text +=  f" This is an OBSERVED tornado. Take action now! "
+                                elif properties['parameters']["tornadoDetection"][0] == "RADAR INDICATED":
+                                    alert_text +=  f" Radar indicated. "
+
+                            # Tornado intensity
+                            if "tornadoDamageThreat" in properties['parameters']:
+                                if properties['parameters']["tornadoDamageThreat"][0] == "CONSIDERABLE":
+                                    alert_text +=  f" This is a CONSIDERABLE tornado. "
+                                elif properties['parameters']["tornadoDamageThreat"][0] == "CATASTROPHIC":
+                                    alert_text +=  f" This is a CATASTROPHIC tornado! Expect major damage. "
+
+            elif properties['event'] == "Flash Flood Warning":
+                            alert_text +=  f" Use caution driving. Never drive through flooded roads; turn around, don't drown! "
+            
+                            # Flooding intensity
+                            if "flashFloodDamageThreat" in properties['parameters']:
+                                if properties['parameters']["flashFloodDamageThreat"][0] == "CONSIDERABLE":
+                                    alert_text +=  f" This is CONSIDERABLE flooding which could cause major impacts. Take action now! "
+                                elif properties['parameters']["flashFloodDamageThreat"][0] == "CATASTROPHIC":
+                                    alert_text +=  f" This is CATASTROPHIC flash flooding which could be deadly. Seek higher ground! "
+
             else:
-                alert_text += properties['instruction']
+                if properties.get('instruction', "") != None:
+                    alert_text += properties['instruction']
+
+            # County codes, to deal with later
+            # properties['geocode']['UGC']
+
 
         alert_text += " ---END---                  "
 
