@@ -7,7 +7,7 @@ import datetime
 headers = {'User-Agent' : 'myapp'}
 # endpoint = 'https://api.weather.gov/alerts?area=MO'
 # endpoint = 'https://api.weather.gov/alerts/active?point=38.50,-90.33'
-endpoint = 'https://api.weather.gov/alerts/active?zone=MOC549'
+endpoint = 'https://api.weather.gov/alerts/active?zone=MOZ063'
 
 response = requests.get(endpoint, headers = headers)
 data = response.json()
@@ -108,6 +108,9 @@ if response.status_code == 200:
                                     alert_text +=  f" This is CONSIDERABLE flooding which could cause major impacts. Take action now! "
                                 elif properties['parameters']["flashFloodDamageThreat"][0] == "CATASTROPHIC":
                                     alert_text +=  f" This is CATASTROPHIC flash flooding which could be deadly. Seek higher ground! "
+
+            elif properties['event'] == "Heat Advisory" or properties['event'] == "Extreme Heat Warning":
+                 alert_text +=  f" Stay hydrated, bring extra water, limit time outdoors, spend time in the A/C, wear light clothing, and NEVER leave people/pets unattended in a car! "
 
             else:
                 if properties.get('instruction', "") != None:
