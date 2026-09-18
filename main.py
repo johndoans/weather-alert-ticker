@@ -35,6 +35,8 @@ if response.status_code == 200:
 
             # Parse the expire time
             expires = properties['expires']
+
+            '''
             date = expires.split('T')[0].split("-")
             time = expires.split('T')[1].split("+")[0].split(":")
             year = int(date[0])
@@ -43,6 +45,10 @@ if response.status_code == 200:
             hour = int(time[0])
             minute = int(time[1])
             date_object = datetime.datetime(year, month, day, hour, minute)
+            '''
+
+            # Apparently there is a way to create a date object just by directly inputting the ISO 8601 format date
+            date_object = datetime.datetime.fromisoformat(expires)
 
             date_string = date_object.strftime("%A, %B %d, %Y at %I:%M %p")
             if date_object.date() == datetime.date.today():
@@ -109,6 +115,16 @@ if response.status_code == 200:
                                 elif properties['parameters']["flashFloodDamageThreat"][0] == "CATASTROPHIC":
                                     alert_text +=  f" This is CATASTROPHIC flash flooding which could be deadly. Seek higher ground! "
 
+            elif properties['event'] == "Severe Thunderstorm Watch":
+                alert_text +=  f" Weather conditions are favorable for severe thunderstorms; stay weather aware! "
+
+            elif properties['event'] == "Tornado Watch":
+                alert_text +=  f" Weather conditions are favorable for tornadoes; stay weather aware! "
+
+            elif properties['event'] == "Flash Flood Watch":
+                alert_text +=  f" Flash flooding is possible; remember to never drive through flooded roads.  "
+
+                 
             elif properties['event'] == "Heat Advisory" or properties['event'] == "Extreme Heat Warning":
                  alert_text +=  f" Stay hydrated, bring extra water, limit time outdoors, spend time in the A/C, wear light clothing, and NEVER leave people/pets unattended in a car! "
 
