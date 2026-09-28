@@ -7,8 +7,8 @@ import datetime
 headers = {'User-Agent' : 'myapp'}
 # endpoint = 'https://api.weather.gov/alerts?area=MO'
 # endpoint = 'https://api.weather.gov/alerts/active?point=38.50,-90.33'
-# endpoint = 'https://api.weather.gov/alerts/active?zone=MOZ063'
-endpoint = 'https://api.weather.gov/alerts/active?zone=KSZ005'
+endpoint = 'https://api.weather.gov/alerts/active?zone=MOZ063'
+# endpoint = 'https://api.weather.gov/alerts/active?zone=KSZ005'
 
 counties = {}
 
