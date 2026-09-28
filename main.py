@@ -2,12 +2,44 @@ import tkinter as tk
 import requests
 import json
 import datetime
-
+    
 # Get data from NWS, county based alert
 headers = {'User-Agent' : 'myapp'}
 # endpoint = 'https://api.weather.gov/alerts?area=MO'
 # endpoint = 'https://api.weather.gov/alerts/active?point=38.50,-90.33'
-endpoint = 'https://api.weather.gov/alerts/active?zone=MOZ063'
+# endpoint = 'https://api.weather.gov/alerts/active?zone=MOZ063'
+endpoint = 'https://api.weather.gov/alerts/active?zone=KSZ005'
+
+counties = {}
+
+# Get county name from dictionary I made below
+def get_county_name(code):
+    if code in counties:
+          try:
+               county_data = counties.get(code)
+               # County name (state name)
+               county_name = county_data[3] + " (" + county_data[0] + ")"
+               return county_name
+          except:
+               return ""
+    else:
+        # For some reason some county codes don't show up in Census list, will investigate later
+        return code
+    
+# Parse and get area names from text file from Census department
+area_response = requests.get('https://www2.census.gov/geo/docs/reference/codes2020/national_cousub2020.txt', headers = headers)
+area_data = area_response.text
+#  Counties split by line breaks
+lines = area_data.split("\n")
+    
+for line in lines:
+    # Data entries for each county seperated by |
+    entry = line.split("|")
+    try:
+        # based on NWS Zone UGC documentation PDF (two-letter state abbreviation + Z (for Zone) + three-digit zone code)
+        counties[entry[0] + "Z" + entry[2]] = entry
+    except:
+        pass
 
 response = requests.get(endpoint, headers = headers)
 data = response.json()
@@ -58,9 +90,14 @@ if response.status_code == 200:
             elif date_object.date() < datetime.date.today() + datetime.timedelta(days=6):
                 date_string = date_object.strftime("%I:%M %p %A")
 
+            # Get county names
+            county_codes = properties['geocode']['UGC']
+            area_string = ""
+            for county_code in county_codes:
+                area_string += get_county_name(county_code) + ", "
 
             description_parts = properties['description'].split('\n\n')
-            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for the counties of {properties['areaDesc']} until { date_string }."
+            alert_text +=  f" ({ alert_number }) The National Weather Service has issued a {properties['event']} for {area_string} until { date_string }."
 
             # Get what/hazard
             for part in description_parts:
@@ -121,7 +158,7 @@ if response.status_code == 200:
             elif properties['event'] == "Tornado Watch":
                 alert_text +=  f" Weather conditions are favorable for tornadoes; stay weather aware! "
 
-            elif properties['event'] == "Flash Flood Watch":
+            elif properties['event'] == "Flood Watch":
                 alert_text +=  f" Flash flooding is possible; remember to never drive through flooded roads.  "
 
                  
@@ -131,10 +168,6 @@ if response.status_code == 200:
             else:
                 if properties.get('instruction', "") != None:
                     alert_text += properties['instruction']
-
-            # County codes, to deal with later
-            # properties['geocode']['UGC']
-
 
         alert_text += " ---END---                  "
 
